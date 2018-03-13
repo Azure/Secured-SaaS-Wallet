@@ -1,0 +1,127 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "kv_name": {
+      "type": "String"
+    },
+    "location": {
+      "type": "String"
+    },
+    "storage_name": {
+      "type": "String"
+    },
+    "sku": {
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Standard",
+        "standard",
+        "Premium",
+        "premium"
+      ],
+      "type": "String",
+      "metadata": {
+        "description": "SKU for the vault"
+      }
+    },
+    "accessPolicies": {
+      "defaultValue": [],
+      "type": "Array",
+      "metadata": {
+        "description": "The access policies defined for this vault."
+      }
+    },
+    "tenant": {
+      "type": "String"
+    },
+    "enabledForDeployment": {
+      "type": "Bool"
+    },
+    "enabledForTemplateDeployment": {
+      "type": "Bool"
+    },
+    "enabledForDiskEncryption": {
+      "type": "Bool"
+    },
+    "accountType": {
+      "type": "String"
+    },
+    "kind": {
+      "type": "String"
+    },
+    "httpsTrafficOnlyEnabled": {
+      "type": "Bool"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[parameters('kv_name')]",
+      "apiVersion": "2015-06-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "enabledForDeployment": "[parameters('enabledForDeployment')]",
+        "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+        "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
+        "tenantId": "[parameters('tenant')]",
+        "accessPolicies": [
+          {
+            "tenantId": "[parameters('tenant')]",
+            "objectId": "[parameters('objectId')]",
+            "permissions": {
+              "keys": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore"
+              ],
+              "secrets": [
+                "Get",
+                "List",
+                "Set",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore"
+              ]
+            }
+          }
+        ],
+        "sku": {
+          "name": "[parameters('sku')]",
+          "family": "A"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "[parameters('accountType')]"
+      },
+      "kind": "[parameters('kind')]",
+      "name": "[parameters('storage_name')]",
+      "apiVersion": "2017-10-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "supportsHttpsTrafficOnly": "[parameters('httpsTrafficOnlyEnabled')]",
+        "encryption": {
+          "services": {
+            "blob": {
+              "enabled": true
+            },
+            "file": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      },
+      "dependsOn": []
+    }
+  ]
+}

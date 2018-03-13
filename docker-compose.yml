@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  transactionengine:
+    image: transactionengine
+    build:
+      context: .
+      dockerfile: WalletSample/txEngine/Dockerfile
+
+  coinssender:
+    image: coinssender
+    ports:
+      - "8545:8545"
+    build:
+      context: .
+      dockerfile: WalletSample/coinssender/Dockerfile
+
+
+  coinsreceiver:
+    image: coinsreceiver
+    build:
+      context: .
+      dockerfile: WalletSample/coinsreceiver/Dockerfile
+
